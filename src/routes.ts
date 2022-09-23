@@ -1,7 +1,10 @@
 import { Express, Request, Response } from 'express'
-import { createUserSessionHandler } from './controller/session.controller'
+import {
+    createUserSessionHandler,
+    invalidateUserSessionHandler,
+} from './controller/session.controller'
 import { createUserHandler } from './controller/user.controller'
-import validateRequest from './middleware/validateRequest'
+import { validateRequest, requiresUser } from './middleware'
 import { createUserSchema, createUserSessionSchema } from './schema/user.schema'
 
 export default (app: Express) => {
@@ -20,4 +23,5 @@ export default (app: Express) => {
     //Get the users session
 
     //Logout
+    app.delete('/api/sessions', requiresUser, invalidateUserSessionHandler)
 }

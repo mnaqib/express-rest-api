@@ -1,8 +1,13 @@
 import { Request, Response } from 'express'
 import config from 'config'
-import { createAccessToken, createSession } from '../service/session.service'
+import {
+    createAccessToken,
+    createSession,
+    updateSession,
+} from '../service/session.service'
 import { validatePassword } from '../service/user.service'
 import { sign } from '../utils/jwt.utils'
+import { get } from 'lodash'
 
 export async function createUserSessionHandler(req: Request, res: Response) {
     //validate the email and password
@@ -23,4 +28,14 @@ export async function createUserSessionHandler(req: Request, res: Response) {
 
     // send refresh & access token back
     res.json({ accessToken, refreshToken })
+}
+
+export async function invalidateUserSessionHandler(
+    req: Request,
+    res: Response
+) {
+    const sessionId = get(req, 'user.session')
+    await updateSession({ _id: sessionId }, { valid: false })
+
+    return res.sendStatus(200)
 }
